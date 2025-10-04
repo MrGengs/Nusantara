@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import Experience from "../../Experience.js";
 import { Capsule } from "three/examples/jsm/math/Capsule";
+import { Box3 } from "three";
+import gsap from "gsap";
 
 import nipplejs from "nipplejs";
 import elements from "../../Utils/functions/elements.js";
@@ -16,6 +18,12 @@ export default class Player {
         this.octree = this.experience.world.octree;
         this.resources = this.experience.resources;
         this.socket = this.experience.socket;
+        this.door = this.experience.world.door;
+
+        if (this.door) {
+            this.door.opened = false;
+        }
+
 
         this.domElements = elements({
             joystickArea: ".joystick-area",
@@ -290,6 +298,13 @@ export default class Player {
         if (result) {
             this.player.onFloor = result.normal.y > 0;
 
+            if (!this.player.onFloor) {
+                this.player.velocity.addScaledVector(
+                    result.normal,
+                    -result.normal.dot(this.player.velocity) * 1.5
+                );
+            }
+
             this.player.collider.translate(
                 result.normal.multiplyScalar(result.depth)
             );
@@ -332,7 +347,7 @@ export default class Player {
     resize() {}
 
     spawnPlayerOutOfBounds() {
-        const spawnPos = new THREE.Vector3(-22.4437, 8 + 5, -15.0529);
+        const spawnPos = new THREE.Vector3(0, -9, 0);
         this.player.velocity = this.player.spawn.velocity;
 
         this.player.collider.start.copy(spawnPos);
@@ -404,6 +419,7 @@ export default class Player {
             .multiplyScalar(this.time.delta);
 
         this.player.collider.translate(deltaPosition);
+
         this.playerCollisions();
 
         this.player.body.position.sub(this.camera.controls.target);
@@ -742,6 +758,23 @@ export default class Player {
         }
     }
 
+    checkDoorInteraction() {
+        if (!this.door || this.door.opened) {
+            return;
+        }
+
+        const doorBoundingBox = new Box3().setFromObject(this.door);
+
+        if (this.player.collider.intersectsBox(doorBoundingBox)) {
+            this.door.opened = true;
+            gsap.to(this.door.rotation, {
+                y: -Math.PI / 2,
+                duration: 1.5,
+                ease: "power2.inOut",
+            });
+        }
+    }
+
     update() {
         if (this.avatar) {
             this.updateColliderMovement();
@@ -750,6 +783,7 @@ export default class Player {
             this.updateAvatarAnimation();
             this.updateCameraPosition();
             this.updateOtherPlayers();
+            this.checkDoorInteraction();
         }
     }
 }

@@ -23,6 +23,13 @@ export default class Avatar {
         this.setAnimation();
         this.scene.add(this.avatar);
 
+        this.avatar.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
         if (this.avatar.userData.id) {
             this.scene.add(this.nametag);
         }

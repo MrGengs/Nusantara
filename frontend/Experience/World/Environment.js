@@ -24,7 +24,16 @@ export default class Environment {
         this.sunLight = new THREE.DirectionalLight("#ffffff", 1.5);
 
         this.sunLight.position.set(1.5, 7, -3);
+        this.sunLight.castShadow = true;
+        this.sunLight.shadow.camera.far = 20;
+        this.sunLight.shadow.mapSize.set(2048, 2048);
+        this.sunLight.shadow.normalBias = 0.05;
+        this.sunLight.shadow.camera.left = -10;
+        this.sunLight.shadow.camera.right = 10;
+        this.sunLight.shadow.camera.top = 10;
+        this.sunLight.shadow.camera.bottom = -10;
         this.scene.add(this.sunLight);
+        this.scene.add(this.sunLight.target);
 
         // this.scene.environment = this.environmentMap.texture;
 
@@ -51,5 +60,12 @@ export default class Environment {
         // this.environmentMap.updateMaterials();
     }
 
-    update() {}
+    update() {
+        if (this.experience.world.player) {
+            this.sunLight.position.x = this.experience.world.player.player.collider.end.x;
+            this.sunLight.position.y = this.experience.world.player.player.collider.end.y + 5;
+            this.sunLight.position.z = this.experience.world.player.player.collider.end.z;
+            this.sunLight.target.position.copy(this.experience.world.player.player.collider.end);
+        }
+    }
 }
