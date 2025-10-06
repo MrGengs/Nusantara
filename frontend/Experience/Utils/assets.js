@@ -53,6 +53,11 @@ export default [
           path: "/models/rumah_joglo_jawa.glb",
         },
         {
+          name: "rumahDayak",
+          type: "glbModel",
+          path: "/models/rumah_dayak_kalimantan.glb",
+        },
+        {
           name: "floor",
           type: "glbModel",
           path: "/models/floor.glb",

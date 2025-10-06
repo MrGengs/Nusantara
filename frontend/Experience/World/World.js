@@ -8,6 +8,7 @@ import Player from "./Player/Player.js";
 
 import Westgate from "./Westgate.js";
 import RumahJoglo from "./RumahJoglo.js";
+import RumahDayak from "./RumahDayak.js";
 import WorldModel from "./WorldModel.js";
 import Environment from "./Environment.js";
 
@@ -25,6 +26,7 @@ export default class World extends EventEmitter {
       if (this.player === null) {
         // this.westgate = new Westgate();
         this.rumahJoglo = new RumahJoglo();
+        this.rumahDayak = new RumahDayak();
         this.worldModel = new WorldModel();
         this.player = new Player();
         this.environment = new Environment();
